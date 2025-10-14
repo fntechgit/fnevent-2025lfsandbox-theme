@@ -30,7 +30,7 @@
   ],
   "widgets": {
     "chat": {
-      "enabled": true,
+      "enabled": false,
       "showQA": false,
       "showHelp": false,
       "defaultScope": "page"
@@ -43,5 +43,8 @@
     "enabled": false,
     "title": "Site under maintenance",
     "subtitle": "Please reload page shortly"
+  },
+  "siteMetadata": {
+    "image": "kmu-logo.png"
   }
 }
