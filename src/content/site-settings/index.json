@@ -30,7 +30,7 @@
   ],
   "widgets": {
     "chat": {
-      "enabled": false,
+      "enabled": true,
       "showQA": false,
       "showHelp": false,
       "defaultScope": "page"
@@ -45,6 +45,11 @@
     "subtitle": "Please reload page shortly"
   },
   "siteMetadata": {
-    "image": "kmu-logo.png"
+    "image": "logo.png",
+    "title": "Linux Foundation Technology Conference",
+    "description": "Join the Linux Foundation Technology Conference to explore open source innovation, cloud native solutions, and cutting-edge technologies shaping the future of software. Network with industry leaders, developers, and open source contributors from around the world."
+  },
+  "favicon": {
+    "asset": "favico.png"
   }
 }
