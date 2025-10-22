@@ -1,9 +1,9 @@
 {
   "hero": {
-    "title": "TIER 1 - EVENT NAME HERE",
-    "date": "Date Information",
+    "title": "Linux Foundation Event",
+    "date": "Coming up soon!",
     "dateLayout": true,
-    "time": "Timezone",
+    "time": "pacific time",
     "buttons": {
       "registerButton": {
         "text": "Register Now",
@@ -28,7 +28,7 @@
   },
   "countdown": {
     "display": true,
-    "text": "Event Kickoff"
+    "text": "Event Kickoff in"
   },
   "widgets": {
     "schedule": {
@@ -45,7 +45,7 @@
     },
     "content": {
       "display": false,
-      "body": "The YOCO Summit was created to showcase our new FNvirtual event platform. YOCO—short for “Your Company”—was dreamed up by our creative team, allowing us to play with a faux brand in the full environment. YOCO has its own guidelines, voice, and visual identity. Pretty spiffy for a company that doesn’t exist, eh?\n\n[Check out our branding guidelines!](https://www.dropbox.com/s/w7qiav79lnnl93r/__FNvirtual-YOCO-site-guidelines.pdf?dl=0)\n\nBy the way, did you notice the “sponsor” and brand partner ads peppered throughout the site? Some are real companies that we know and love; others are faux brands we created so as to not step on another company’s branded toes. We think it works pretty well. How about you? Email us at [info@fntech.com](mailto:info@fntech.com)!"
+      "body": "Join the world’s leading developers, system architects, and open-source pioneers at Linux Foundation Event 2025, the premier annual conference hosted by the Linux Foundation. This year’s theme, “Beyond the Kernel: Scaling Trust and Transparency,” explores the evolution of Open Source as the backbone of global infrastructure—from embedded systems and AI workloads to decentralized cloud networks and edge computing. Attendees will engage with thought leaders shaping the next generation of secure, sustainable open technology.\n\nAcross multiple days of keynotes, workshops, and live demos, participants will dive into breakthrough topics including quantum-safe cryptography, reproducible builds, energy-efficient data centers, and community-driven governance models. Whether you’re maintaining a critical subsystem, deploying Kubernetes clusters at scale, or simply passionate about the open-source ethos, Linux Foundation Event 2025 offers a front-row seat to the future of collaboration."
     }
   },
   "masonry": {
