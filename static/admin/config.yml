@@ -1,0 +1,60 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: static/img
+public_folder: /img
+
+collections:
+  - name: "configurations"
+    label: "Configurations"
+    files:
+      - label: "Site Settings"
+        name: "site-settings"
+        file: "src/content/site-settings/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "site-settings" }
+          - { label: "Settings", name: "settings", widget: "object" }
+
+  - name: "default-pages"
+    label: "Default Pages"
+    files:
+      - label: "Marketing Page"
+        name: "marketing-page"
+        file: "src/content/marketing-page/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "marketing-page" }
+      - label: "Lobby Page"
+        name: "lobby-page"
+        file: "src/content/lobby-page/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "lobby-page" }
+      - label: "Expo Hall Page"
+        name: "expo-hall-page"
+        file: "src/content/expo-hall-page/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "expo-hall-page" }
+      - label: "My Schedule Page"
+        name: "my-schedule-page"
+        file: "src/content/my-schedule-page/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "my-schedule-page" }
+      - label: "Footer"
+        name: "footer"
+        file: "src/content/footer/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "footer" }
+      - label: "Navbar"
+        name: "navbar"
+        file: "src/content/navbar/index.json"
+        fields:
+          - { label: "Template Key", name: "templateKey", widget: "hidden", default: "navbar" }
+
+  - name: "content-pages"
+    label: "Content Pages"
+    folder: "src/pages/content-pages"
+    create: false
+    fields:
+      - { label: "Template Key", name: "templateKey", widget: "hidden", default: "content-page" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
