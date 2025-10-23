@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: fntechgit/fnevent-2025lfsandbox-theme
   branch: main
 
 media_folder: static/img
