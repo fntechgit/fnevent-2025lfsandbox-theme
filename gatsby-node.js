@@ -49,15 +49,27 @@ if (typeof global !== 'undefined') {
   }
 }
 
-exports.onCreateWebpackConfig = ({ stage, actions }) => {
+exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
   const path = require('path');
+  const webpack = require('webpack');
 
   if (stage === 'build-html' || stage === 'develop-html') {
     // Additional webpack config for SSR if needed
     actions.setWebpackConfig({
+      plugins: [
+        // Use NormalModuleReplacementPlugin to replace the problematic buildPolyfills.js
+        new webpack.NormalModuleReplacementPlugin(
+          /@openeventkit\/event-site\/src\/utils\/buildPolyfills/,
+          path.resolve(__dirname, 'src/patches/buildPolyfills.js')
+        ),
+      ],
       resolve: {
         alias: {
-          // Replace the problematic buildPolyfills.js with our patched version
+          // Also add alias as a fallback
+          '@openeventkit/event-site/src/utils/buildPolyfills.js': path.resolve(
+            __dirname,
+            'src/patches/buildPolyfills.js'
+          ),
           '@openeventkit/event-site/src/utils/buildPolyfills': path.resolve(
             __dirname,
             'src/patches/buildPolyfills.js'
