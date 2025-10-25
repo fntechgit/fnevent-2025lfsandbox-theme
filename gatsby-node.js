@@ -14,26 +14,55 @@ if (typeof global !== 'undefined') {
     // Ignore errors if property can't be deleted
   }
 
-  // Create a new writable navigator object
-  global.navigator = {
-    userAgent: 'Mozilla/5.0 (Node.js) GatsbySSR',
-    platform: 'node',
-    languages: ['en'],
-    language: 'en',
-    // Add common navigator properties that might be accessed
-    onLine: true,
-    cookieEnabled: false,
-    appName: 'Netscape',
-    appVersion: '5.0',
-    maxTouchPoints: 0,
-  };
+  // Define navigator as a writable, configurable property
+  try {
+    Object.defineProperty(global, 'navigator', {
+      value: {
+        userAgent: 'Mozilla/5.0 (Node.js) GatsbySSR',
+        platform: 'node',
+        languages: ['en'],
+        language: 'en',
+        // Add common navigator properties that might be accessed
+        onLine: true,
+        cookieEnabled: false,
+        appName: 'Netscape',
+        appVersion: '5.0',
+        maxTouchPoints: 0,
+      },
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
+  } catch (e) {
+    // Fallback to direct assignment if defineProperty fails
+    global.navigator = {
+      userAgent: 'Mozilla/5.0 (Node.js) GatsbySSR',
+      platform: 'node',
+      languages: ['en'],
+      language: 'en',
+      onLine: true,
+      cookieEnabled: false,
+      appName: 'Netscape',
+      appVersion: '5.0',
+      maxTouchPoints: 0,
+    };
+  }
 }
 
 exports.onCreateWebpackConfig = ({ stage, actions }) => {
+  const path = require('path');
+
   if (stage === 'build-html' || stage === 'develop-html') {
     // Additional webpack config for SSR if needed
     actions.setWebpackConfig({
       resolve: {
+        alias: {
+          // Replace the problematic buildPolyfills.js with our patched version
+          '@openeventkit/event-site/src/utils/buildPolyfills': path.resolve(
+            __dirname,
+            'src/patches/buildPolyfills.js'
+          ),
+        },
         fallback: {
           fs: false,
           net: false,
