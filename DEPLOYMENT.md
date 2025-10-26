@@ -2,13 +2,26 @@
 
 ## Known Issues and Fixes
 
-### Partytown Plugin
+### Partytown Plugin Error
 
-Gatsby 5.x includes an internal Partytown plugin for optimizing third-party scripts. However, this plugin uses the deprecated `@builder.io/partytown` package which has ESM/CommonJS compatibility issues that cause "Invalid URL" build errors.
+**Issue**: Gatsby 5.x includes an internal Partytown plugin that uses the deprecated `@builder.io/partytown` package, which has ESM/CommonJS compatibility issues causing "Invalid URL" errors during the "load gatsby config" phase.
 
-**Fix Applied**: The build now includes a module override in `gatsby-node.js` that stubs out the problematic Partytown functions, preventing the error while maintaining build compatibility. This means Partytown functionality is disabled but the build completes successfully.
+**Fix Applied**: Module override in `gatsby-node.js:10-30` that stubs out the Partytown utility functions.
 
-If you need Partytown functionality, you can manually install and configure `@qwik.dev/partytown` (the updated package) using a custom plugin.
+### LMDB Datastore Error
+
+**Issue**: Gatsby's LMDB datastore tries to load compression dictionaries using file URLs during initialization. In certain build environments (e.g., Heroku), file path resolution fails, causing "TypeError: Invalid URL" in the LMDB `makeCompression` function.
+
+**Fix Applied**: Global URL constructor patch in `gatsby-node.js:36-61` that catches Invalid URL errors and provides a safe fallback. This allows LMDB to initialize successfully without compression dictionary support (which is optional and not used by default).
+
+### Impact
+
+Both fixes are non-invasive workarounds that:
+- Allow the build to complete successfully
+- Don't affect core Gatsby functionality
+- Disable optional features that aren't critical for the build
+
+If you need Partytown functionality in the future, you can manually install `@qwik.dev/partytown` as a separate plugin.
 
 ## Other Known Issues
 

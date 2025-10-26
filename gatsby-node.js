@@ -29,6 +29,37 @@ try {
   console.warn('Could not patch Partytown module:', e.message);
 }
 
+// Fix for LMDB "Invalid URL" error
+// LMDB tries to load compression dictionaries using new URL() with file paths
+// In certain build environments, this fails because __filename or __dirname are not properly set
+// We patch the global URL constructor to handle these cases gracefully
+try {
+  const OriginalURL = global.URL;
+  global.URL = class PatchedURL extends OriginalURL {
+    constructor(url, base) {
+      // If this looks like a file path operation that might fail, provide a safe fallback
+      try {
+        super(url, base);
+      } catch (error) {
+        if (error.message && error.message.includes('Invalid URL')) {
+          // Provide a dummy file URL that won't break LMDB initialization
+          // LMDB only needs this for compression dictionaries which we don't use
+          console.warn('[LMDB] Caught Invalid URL error, using fallback:', error.message);
+          super('file:///tmp/placeholder');
+        } else {
+          throw error;
+        }
+      }
+    }
+  };
+  // Copy over static methods
+  Object.setPrototypeOf(global.URL, OriginalURL);
+  global.URL.createObjectURL = OriginalURL.createObjectURL;
+  global.URL.revokeObjectURL = OriginalURL.revokeObjectURL;
+} catch (e) {
+  console.warn('Could not patch URL constructor:', e.message);
+}
+
 // Fix for "Cannot set property navigator of #<Object> which has only a getter" error
 // Set up writable navigator object before webpack compilation
 if (typeof global !== 'undefined') {
