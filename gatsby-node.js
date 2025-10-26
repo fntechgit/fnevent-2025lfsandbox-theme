@@ -4,10 +4,29 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/
  */
 
-// Set GATSBY_PARTYTOWN_PROXY_URL environment variable early to prevent build errors
-// This must be set before Gatsby loads its internal Partytown plugin
-if (!process.env.GATSBY_PARTYTOWN_PROXY_URL) {
-  process.env.GATSBY_PARTYTOWN_PROXY_URL = 'http://localhost/~partytown/';
+// Fix for Partytown "Invalid URL" error
+// Gatsby's internal Partytown plugin uses @builder.io/partytown which has ESM/CommonJS compatibility issues
+// We need to prevent the plugin from loading by stubbing the required module
+try {
+  // Create a mock module for @builder.io/partytown/utils
+  const Module = require('module');
+  const originalRequire = Module.prototype.require;
+
+  Module.prototype.require = function(id) {
+    if (id === '@builder.io/partytown/utils') {
+      // Return a mock with the functions Gatsby expects
+      return {
+        copyLibFiles: async () => {
+          console.log('[Partytown] Skipping copyLibFiles - internal plugin disabled');
+          return { src: '', dest: '' };
+        },
+        libDirPath: () => ''
+      };
+    }
+    return originalRequire.apply(this, arguments);
+  };
+} catch (e) {
+  console.warn('Could not patch Partytown module:', e.message);
 }
 
 // Fix for "Cannot set property navigator of #<Object> which has only a getter" error
