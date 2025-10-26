@@ -1,16 +1,18 @@
 # Deployment Configuration
 
-## Required Environment Variables
+## Environment Variables
 
-### GATSBY_PARTYTOWN_PROXY_URL
+### GATSBY_PARTYTOWN_PROXY_URL (Optional)
 
-This environment variable is required for Gatsby's internal Partytown plugin to function correctly during the build process.
+This environment variable is used by Gatsby's internal Partytown plugin for optimizing third-party scripts.
 
-**Value**: `http://localhost/~partytown/`
+**Default Value**: `http://localhost/~partytown/` (automatically set in `gatsby-config.js`)
 
-**Why it's needed**: Gatsby 5.x includes Partytown as an internal plugin for optimizing third-party scripts. The plugin requires a valid proxy URL to be configured, otherwise the build will fail with an "Invalid URL" error.
+**Why it exists**: Gatsby 5.x includes Partytown as an internal plugin. A default value is now configured in `gatsby-config.js`, so the build will work out of the box without any manual configuration.
 
-## Setting Environment Variables
+**When to override**: You only need to set this environment variable if you want to use a different proxy URL than the default.
+
+## Setting Environment Variables (Optional)
 
 ### For Heroku
 
@@ -42,10 +44,13 @@ Or set in Netlify UI:
 
 ### For Local Development
 
-Copy `.env.production.example` to `.env.production`:
+No configuration needed! The default value in `gatsby-config.js` will be used automatically.
+
+If you want to override the default, create a `.env.production` file:
 
 ```bash
 cp .env.production.example .env.production
+# Then edit .env.production with your custom value
 ```
 
 ## Other Known Issues
