@@ -1,57 +1,14 @@
 # Deployment Configuration
 
-## Environment Variables
+## Known Issues and Fixes
 
-### GATSBY_PARTYTOWN_PROXY_URL (Optional)
+### Partytown Plugin
 
-This environment variable is used by Gatsby's internal Partytown plugin for optimizing third-party scripts.
+Gatsby 5.x includes an internal Partytown plugin for optimizing third-party scripts. However, this plugin uses the deprecated `@builder.io/partytown` package which has ESM/CommonJS compatibility issues that cause "Invalid URL" build errors.
 
-**Default Value**: `http://localhost/~partytown/` (automatically set in `gatsby-node.js` and `gatsby-config.js`)
+**Fix Applied**: The build now includes a module override in `gatsby-node.js` that stubs out the problematic Partytown functions, preventing the error while maintaining build compatibility. This means Partytown functionality is disabled but the build completes successfully.
 
-**Why it exists**: Gatsby 5.x includes Partytown as an internal plugin. A default value is now configured in both `gatsby-node.js` (set early during initialization) and `gatsby-config.js` (as a fallback), so the build will work out of the box without any manual configuration.
-
-**When to override**: You only need to set this environment variable if you want to use a different proxy URL than the default.
-
-## Setting Environment Variables (Optional)
-
-### For Heroku
-
-Set the environment variable using the Heroku CLI:
-
-```bash
-heroku config:set GATSBY_PARTYTOWN_PROXY_URL=http://localhost/~partytown/
-```
-
-Or via the Heroku Dashboard:
-1. Go to your app's Settings tab
-2. Click "Reveal Config Vars"
-3. Add a new config var:
-   - KEY: `GATSBY_PARTYTOWN_PROXY_URL`
-   - VALUE: `http://localhost/~partytown/`
-
-### For Netlify
-
-Add to your `netlify.toml`:
-
-```toml
-[build.environment]
-  GATSBY_PARTYTOWN_PROXY_URL = "http://localhost/~partytown/"
-```
-
-Or set in Netlify UI:
-1. Go to Site Settings > Build & deploy > Environment
-2. Add environment variable
-
-### For Local Development
-
-No configuration needed! The default value in `gatsby-config.js` will be used automatically.
-
-If you want to override the default, create a `.env.production` file:
-
-```bash
-cp .env.production.example .env.production
-# Then edit .env.production with your custom value
-```
+If you need Partytown functionality, you can manually install and configure `@qwik.dev/partytown` (the updated package) using a custom plugin.
 
 ## Other Known Issues
 
