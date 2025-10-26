@@ -51,7 +51,8 @@ if (typeof global !== 'undefined') {
   // Add window polyfill for SSR
   if (typeof window === 'undefined') {
     try {
-      global.window = {
+      // Create a comprehensive window mock for SSR
+      const mockWindow = {
         matchMedia: (query) => ({
           matches: false,
           media: query,
@@ -66,9 +67,49 @@ if (typeof global !== 'undefined') {
           documentElement: {
             style: {},
           },
+          body: {
+            style: {},
+          },
+          createElement: () => ({
+            style: {},
+          }),
         },
         navigator: global.navigator,
+        getComputedStyle: () => ({
+          getPropertyValue: () => '',
+          'prefers-reduced-motion': 'no-preference',
+        }),
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        location: {
+          href: 'http://localhost',
+          origin: 'http://localhost',
+          protocol: 'http:',
+          host: 'localhost',
+          hostname: 'localhost',
+          port: '',
+          pathname: '/',
+          search: '',
+          hash: '',
+        },
+        localStorage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+          clear: () => {},
+        },
+        sessionStorage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+          clear: () => {},
+        },
       };
+
+      global.window = mockWindow;
+      global.document = mockWindow.document;
+      global.localStorage = mockWindow.localStorage;
+      global.sessionStorage = mockWindow.sessionStorage;
     } catch (e) {
       console.warn('Could not set global.window:', e.message);
     }
