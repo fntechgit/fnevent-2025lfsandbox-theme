@@ -47,6 +47,32 @@ if (typeof global !== 'undefined') {
       maxTouchPoints: 0,
     };
   }
+
+  // Add window polyfill for SSR
+  if (typeof window === 'undefined') {
+    try {
+      global.window = {
+        matchMedia: (query) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => true,
+        }),
+        document: {
+          documentElement: {
+            style: {},
+          },
+        },
+        navigator: global.navigator,
+      };
+    } catch (e) {
+      console.warn('Could not set global.window:', e.message);
+    }
+  }
 }
 
 exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
