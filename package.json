@@ -20,6 +20,9 @@
     "gatsby": "^5.13.5"
   },
   "devDependencies": {
-    "babel-preset-gatsby": "^3.14.0"
+    "babel-preset-gatsby": "^3.14.0",
+    "jsdom": "^24.0.0",
+    "matchmediaquery": "^0.3.1",
+    "xmlhttprequest": "^1.8.0"
   }
 }
