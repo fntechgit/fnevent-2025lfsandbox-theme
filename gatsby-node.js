@@ -4,6 +4,12 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/
  */
 
+// Set GATSBY_PARTYTOWN_PROXY_URL environment variable early to prevent build errors
+// This must be set before Gatsby loads its internal Partytown plugin
+if (!process.env.GATSBY_PARTYTOWN_PROXY_URL) {
+  process.env.GATSBY_PARTYTOWN_PROXY_URL = 'http://localhost/~partytown/';
+}
+
 // Fix for "Cannot set property navigator of #<Object> which has only a getter" error
 // Set up writable navigator object before webpack compilation
 if (typeof global !== 'undefined') {

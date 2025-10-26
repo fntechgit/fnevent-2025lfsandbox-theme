@@ -6,9 +6,9 @@
 
 This environment variable is used by Gatsby's internal Partytown plugin for optimizing third-party scripts.
 
-**Default Value**: `http://localhost/~partytown/` (automatically set in `gatsby-config.js`)
+**Default Value**: `http://localhost/~partytown/` (automatically set in `gatsby-node.js` and `gatsby-config.js`)
 
-**Why it exists**: Gatsby 5.x includes Partytown as an internal plugin. A default value is now configured in `gatsby-config.js`, so the build will work out of the box without any manual configuration.
+**Why it exists**: Gatsby 5.x includes Partytown as an internal plugin. A default value is now configured in both `gatsby-node.js` (set early during initialization) and `gatsby-config.js` (as a fallback), so the build will work out of the box without any manual configuration.
 
 **When to override**: You only need to set this environment variable if you want to use a different proxy URL than the default.
 
