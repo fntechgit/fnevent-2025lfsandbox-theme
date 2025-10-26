@@ -32,8 +32,11 @@ try {
 // Fix for LMDB "Invalid URL" error
 // LMDB tries to load compression dictionaries using new URL() with file paths
 // In certain build environments, this fails because __filename or __dirname are not properly set
-// We patch the global URL constructor and fs.readFileSync to handle these cases gracefully
+// We patch the global URL constructor and fs operations to handle these cases gracefully
 try {
+  const fs = require('fs');
+  const path = require('path');
+
   const OriginalURL = global.URL;
   global.URL = class PatchedURL extends OriginalURL {
     constructor(url, base) {
@@ -57,12 +60,30 @@ try {
   global.URL.createObjectURL = OriginalURL.createObjectURL;
   global.URL.revokeObjectURL = OriginalURL.revokeObjectURL;
 
-  // Also patch fs.readFileSync to handle the dictionary file read
-  const fs = require('fs');
+  // Patch fs.openSync to handle the dictionary file
+  const originalOpenSync = fs.openSync;
+  fs.openSync = function(filePath, flags, mode) {
+    // If LMDB is trying to open the compression dictionary, create a temp file
+    if (typeof filePath === 'string' && filePath.includes('dict.txt')) {
+      console.warn('[LMDB] Intercepted dictionary file open, creating temp file');
+      const tmpDir = require('os').tmpdir();
+      const tmpFile = path.join(tmpDir, 'lmdb-dict-stub.txt');
+      // Create an empty file if it doesn't exist
+      try {
+        fs.writeFileSync(tmpFile, '');
+      } catch (e) {
+        // Ignore errors
+      }
+      return originalOpenSync.call(this, tmpFile, flags, mode);
+    }
+    return originalOpenSync.apply(this, arguments);
+  };
+
+  // Also patch fs.readFileSync as a backup
   const originalReadFileSync = fs.readFileSync;
-  fs.readFileSync = function(path, options) {
+  fs.readFileSync = function(filePath, options) {
     // If LMDB is trying to read the compression dictionary, return an empty buffer
-    if (typeof path === 'string' && path.includes('dict.txt')) {
+    if (typeof filePath === 'string' && filePath.includes('dict.txt')) {
       console.warn('[LMDB] Intercepted dictionary file read, returning empty buffer');
       return Buffer.alloc(0);
     }
