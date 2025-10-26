@@ -32,7 +32,7 @@ try {
 // Fix for LMDB "Invalid URL" error
 // LMDB tries to load compression dictionaries using new URL() with file paths
 // In certain build environments, this fails because __filename or __dirname are not properly set
-// We patch the global URL constructor to handle these cases gracefully
+// We patch the global URL constructor and fs.readFileSync to handle these cases gracefully
 try {
   const OriginalURL = global.URL;
   global.URL = class PatchedURL extends OriginalURL {
@@ -45,7 +45,7 @@ try {
           // Provide a dummy file URL that won't break LMDB initialization
           // LMDB only needs this for compression dictionaries which we don't use
           console.warn('[LMDB] Caught Invalid URL error, using fallback:', error.message);
-          super('file:///tmp/placeholder');
+          super('file:///lmdb-dict-disabled');
         } else {
           throw error;
         }
@@ -56,8 +56,20 @@ try {
   Object.setPrototypeOf(global.URL, OriginalURL);
   global.URL.createObjectURL = OriginalURL.createObjectURL;
   global.URL.revokeObjectURL = OriginalURL.revokeObjectURL;
+
+  // Also patch fs.readFileSync to handle the dictionary file read
+  const fs = require('fs');
+  const originalReadFileSync = fs.readFileSync;
+  fs.readFileSync = function(path, options) {
+    // If LMDB is trying to read the compression dictionary, return an empty buffer
+    if (typeof path === 'string' && path.includes('dict.txt')) {
+      console.warn('[LMDB] Intercepted dictionary file read, returning empty buffer');
+      return Buffer.alloc(0);
+    }
+    return originalReadFileSync.apply(this, arguments);
+  };
 } catch (e) {
-  console.warn('Could not patch URL constructor:', e.message);
+  console.warn('Could not patch URL constructor or fs:', e.message);
 }
 
 // Fix for "Cannot set property navigator of #<Object> which has only a getter" error
