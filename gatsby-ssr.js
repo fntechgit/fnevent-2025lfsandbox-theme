@@ -36,6 +36,32 @@ if (typeof global !== 'undefined') {
     // If defineProperty fails, log the error
     console.warn('Could not set global.navigator:', e.message);
   }
+
+  // Add window polyfill for SSR
+  if (typeof window === 'undefined') {
+    try {
+      global.window = {
+        matchMedia: (query) => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+          addEventListener: () => {},
+          removeEventListener: () => {},
+          dispatchEvent: () => true,
+        }),
+        document: {
+          documentElement: {
+            style: {},
+          },
+        },
+        navigator: global.navigator,
+      };
+    } catch (e) {
+      console.warn('Could not set global.window:', e.message);
+    }
+  }
 }
 
 exports.onPreRenderHTML = ({ getHeadComponents, replaceHeadComponents }) => {
