@@ -17,28 +17,17 @@ try {
 }
 
 // Rebuild sharp with scripts enabled (npm install runs with ignore-scripts=true)
-// This allows us to avoid issues with other packages while ensuring sharp works
+// This allows sharp to download and install the correct prebuilt binary
 try {
-  console.log('Rebuilding sharp...');
-
-  // Configure environment for sharp rebuild
-  const rebuildEnv = {
-    ...process.env,
-    npm_config_ignore_scripts: 'false',
-  };
-
-  // If SHARP_FORCE_GLOBAL_LIBVIPS is set (e.g., on Heroku), configure for system libvips
-  if (process.env.SHARP_FORCE_GLOBAL_LIBVIPS === 'true') {
-    console.log('Using system libvips (SHARP_FORCE_GLOBAL_LIBVIPS=true)');
-    // Disable binary downloads and use system libvips
-    rebuildEnv.npm_config_sharp_libvips_binary_host = '';
-    rebuildEnv.SHARP_IGNORE_GLOBAL_LIBVIPS = '0';
-  }
+  console.log('Rebuilding sharp with scripts enabled...');
 
   // Use npm rebuild with scripts enabled for sharp only
-  execSync('npm rebuild sharp', {
+  // This allows sharp to download the prebuilt binary for the current platform
+  execSync('npm rebuild --ignore-scripts=false sharp', {
     stdio: 'inherit',
-    env: rebuildEnv
+    env: {
+      ...process.env,
+    }
   });
 
   // Clear require cache and test
