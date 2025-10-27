@@ -16,14 +16,14 @@ try {
   console.log('Sharp needs to be installed/rebuilt...');
 }
 
-// Rebuild sharp with scripts enabled (npm install runs with ignore-scripts=true)
+// Reinstall sharp with scripts enabled (npm install runs with ignore-scripts=true)
 // This allows sharp to download and install the correct prebuilt binary
 try {
-  console.log('Rebuilding sharp with scripts enabled...');
+  console.log('Reinstalling sharp with scripts enabled...');
 
-  // Use npm rebuild with scripts enabled for sharp only
-  // This allows sharp to download the prebuilt binary for the current platform
-  execSync('npm rebuild --ignore-scripts=false sharp', {
+  // Force reinstall sharp with scripts enabled and foreground output
+  // This ensures the prebuilt binary is downloaded for the current platform
+  execSync('npm install --ignore-scripts=false --foreground-scripts --force --platform=linux --arch=x64 sharp', {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -43,7 +43,7 @@ try {
   console.log('  libvips version:', sharp.versions.vips);
   console.log('');
 } catch (e) {
-  console.error('\n✗ Failed to rebuild sharp:', e.message);
+  console.error('\n✗ Failed to reinstall sharp:', e.message);
   console.error('The build may fail. Check sharp installation.\n');
   // Don't exit with error - let the build try and fail with better error messages
 }
