@@ -78,15 +78,19 @@ try {
 
   // Patch fs.openSync to handle the dictionary file
   fs.openSync = function(filePath, flags, mode) {
-    // Debug: log all openSync calls to see what's being opened
-    const filePathStr = String(filePath);
-    if (filePathStr.includes('dict')) {
-      console.warn('[LMDB] openSync called with:', typeof filePath, filePath);
+    // Handle both strings and URL objects
+    let pathStr = '';
+    if (typeof filePath === 'string') {
+      pathStr = filePath;
+    } else if (filePath && typeof filePath === 'object' && filePath.pathname) {
+      // It's a URL object
+      pathStr = filePath.pathname;
+      console.warn('[LMDB] openSync called with URL object, pathname:', pathStr);
     }
 
     // If LMDB is trying to open the compression dictionary, use our stub file
-    if (typeof filePath === 'string' && (filePath.includes('dict.txt') || filePath.includes('dict/dict') || filePath.includes('/dict/'))) {
-      console.warn('[LMDB] Intercepted dictionary file open:', filePath, '-> redirecting to temp file');
+    if (pathStr && (pathStr.includes('dict.txt') || pathStr.includes('dict/dict') || pathStr.includes('/dict/'))) {
+      console.warn('[LMDB] Intercepted dictionary file open:', pathStr, '-> redirecting to temp file');
       return originalOpenSync.call(this, tmpFile, flags, mode);
     }
     return originalOpenSync.apply(this, arguments);
@@ -94,9 +98,18 @@ try {
 
   // Also patch fs.readFileSync as a backup
   fs.readFileSync = function(filePath, options) {
+    // Handle both strings and URL objects
+    let pathStr = '';
+    if (typeof filePath === 'string') {
+      pathStr = filePath;
+    } else if (filePath && typeof filePath === 'object' && filePath.pathname) {
+      // It's a URL object
+      pathStr = filePath.pathname;
+    }
+
     // If LMDB is trying to read the compression dictionary, return an empty buffer
-    if (typeof filePath === 'string' && (filePath.includes('dict.txt') || filePath.includes('dict/dict'))) {
-      console.warn('[LMDB] Intercepted dictionary file read:', filePath, '-> returning empty buffer');
+    if (pathStr && (pathStr.includes('dict.txt') || pathStr.includes('dict/dict') || pathStr.includes('/dict/'))) {
+      console.warn('[LMDB] Intercepted dictionary file read:', pathStr, '-> returning empty buffer');
       return Buffer.alloc(0);
     }
     return originalReadFileSync.apply(this, arguments);
