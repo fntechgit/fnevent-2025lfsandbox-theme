@@ -1,0 +1,22 @@
+{
+  "name": "fnevent-tier1-default-theme",
+  "description": "Tier 1 Default fnEvent theme",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    },
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "SHARP_FORCE_GLOBAL_LIBVIPS": {
+      "description": "Force sharp to use system-installed libvips",
+      "value": "true"
+    }
+  }
+}
