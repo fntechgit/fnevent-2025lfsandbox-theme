@@ -10,8 +10,7 @@
   "scripts": {
     "develop": "gatsby develop -S -H 0.0.0.0",
     "start": "gatsby develop",
-    "prebuild": "node scripts/prebuild.js",
-    "build": "NODE_ENV=production NODE_OPTIONS=--max-old-space-size=10240 cross-env node --trace-warnings node_modules/.bin/gatsby build --log-pages",
+    "build": "bash scripts/build-with-sharp-fix.sh",
     "serve": "gatsby serve",
     "gatsby-clean": "gatsby clean",
     "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && yarn && yarn gatsby-clean",
