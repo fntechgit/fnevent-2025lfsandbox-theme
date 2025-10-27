@@ -36,6 +36,12 @@ try {
 try {
   const fs = require('fs');
   const path = require('path');
+  const os = require('os');
+
+  // Store original functions before patching
+  const originalOpenSync = fs.openSync;
+  const originalReadFileSync = fs.readFileSync;
+  const originalWriteFileSync = fs.writeFileSync;
 
   const OriginalURL = global.URL;
   global.URL = class PatchedURL extends OriginalURL {
@@ -60,27 +66,27 @@ try {
   global.URL.createObjectURL = OriginalURL.createObjectURL;
   global.URL.revokeObjectURL = OriginalURL.revokeObjectURL;
 
+  // Create the temp stub file once at startup using original functions
+  const tmpDir = os.tmpdir();
+  const tmpFile = path.join(tmpDir, 'lmdb-dict-stub.txt');
+  try {
+    originalWriteFileSync(tmpFile, '');
+    console.log('[LMDB] Created temp dictionary stub file at', tmpFile);
+  } catch (e) {
+    console.warn('[LMDB] Could not create temp stub file:', e.message);
+  }
+
   // Patch fs.openSync to handle the dictionary file
-  const originalOpenSync = fs.openSync;
   fs.openSync = function(filePath, flags, mode) {
-    // If LMDB is trying to open the compression dictionary, create a temp file
+    // If LMDB is trying to open the compression dictionary, use our stub file
     if (typeof filePath === 'string' && filePath.includes('dict.txt')) {
-      console.warn('[LMDB] Intercepted dictionary file open, creating temp file');
-      const tmpDir = require('os').tmpdir();
-      const tmpFile = path.join(tmpDir, 'lmdb-dict-stub.txt');
-      // Create an empty file if it doesn't exist
-      try {
-        fs.writeFileSync(tmpFile, '');
-      } catch (e) {
-        // Ignore errors
-      }
+      console.warn('[LMDB] Intercepted dictionary file open, redirecting to temp file');
       return originalOpenSync.call(this, tmpFile, flags, mode);
     }
     return originalOpenSync.apply(this, arguments);
   };
 
   // Also patch fs.readFileSync as a backup
-  const originalReadFileSync = fs.readFileSync;
   fs.readFileSync = function(filePath, options) {
     // If LMDB is trying to read the compression dictionary, return an empty buffer
     if (typeof filePath === 'string' && filePath.includes('dict.txt')) {
