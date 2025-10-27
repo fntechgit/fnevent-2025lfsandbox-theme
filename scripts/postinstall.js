@@ -12,57 +12,82 @@ try {
   console.log('sharp is already working, no fix needed.');
   process.exit(0);
 } catch (e) {
-  console.log('sharp needs to be fixed, attempting rebuild...');
+  console.log('sharp needs to be fixed, attempting installation...');
 }
 
-// Try to rebuild sharp with various methods
+// Clean environment for sharp installation
+const cleanEnv = {
+  ...process.env,
+  npm_config_sharp_ignore_global_libvips: '1',
+  SHARP_IGNORE_GLOBAL_LIBVIPS: '1',
+  HTTP_PROXY: '',
+  HTTPS_PROXY: '',
+  http_proxy: '',
+  https_proxy: '',
+  NO_PROXY: '*',
+  no_proxy: '*'
+};
+
+// Try to install/rebuild sharp with various methods
 const methods = [
-  // Method 1: Try without proxy
+  // Method 1: Force reinstall sharp with prebuilt binaries
   () => {
-    console.log('Method 1: Rebuilding without proxy...');
+    console.log('Method 1: Force reinstalling sharp with prebuilt binaries...');
+    execSync('npm install --force --ignore-scripts=false --platform=linux --arch=x64 sharp@0.32.6', {
+      env: cleanEnv,
+      stdio: 'inherit'
+    });
+  },
+  // Method 2: Rebuild sharp without proxy
+  () => {
+    console.log('Method 2: Rebuilding sharp...');
+    execSync('npm rebuild sharp --ignore-scripts=false', {
+      env: cleanEnv,
+      stdio: 'inherit'
+    });
+  },
+  // Method 3: Install sharp with npm install
+  () => {
+    console.log('Method 3: Installing sharp directly...');
+    execSync('npm install --ignore-scripts=false sharp@0.32.6', {
+      env: cleanEnv,
+      stdio: 'inherit'
+    });
+  },
+  // Method 4: Try with proxy settings intact
+  () => {
+    console.log('Method 4: Rebuilding with system proxy...');
     execSync('npm rebuild sharp --ignore-scripts=false', {
       env: {
         ...process.env,
-        HTTP_PROXY: '',
-        HTTPS_PROXY: '',
-        http_proxy: '',
-        https_proxy: '',
-        NO_PROXY: '*',
-        no_proxy: '*'
+        npm_config_sharp_ignore_global_libvips: '1',
+        SHARP_IGNORE_GLOBAL_LIBVIPS: '1'
       },
-      stdio: 'inherit'
-    });
-  },
-  // Method 2: Try with proxy
-  () => {
-    console.log('Method 2: Rebuilding with proxy...');
-    execSync('npm rebuild sharp --ignore-scripts=false', {
-      stdio: 'inherit'
-    });
-  },
-  // Method 3: Try installing sharp directly
-  () => {
-    console.log('Method 3: Installing sharp with platform flags...');
-    execSync('npm install --platform=linux --arch=x64 --ignore-scripts=false sharp', {
       stdio: 'inherit'
     });
   }
 ];
 
-for (const method of methods) {
+for (let i = 0; i < methods.length; i++) {
   try {
-    method();
-    // Check if it worked
-    require.cache = {}; // Clear require cache
+    methods[i]();
+    // Clear require cache and check if it worked
+    Object.keys(require.cache).forEach(key => {
+      if (key.includes('sharp')) {
+        delete require.cache[key];
+      }
+    });
     require('sharp');
-    console.log('Successfully fixed sharp!');
+    console.log(`Successfully fixed sharp using method ${i + 1}!`);
     process.exit(0);
   } catch (e) {
-    console.log(`Method failed: ${e.message}`);
-    continue;
+    console.log(`Method ${i + 1} failed: ${e.message}`);
+    if (i < methods.length - 1) {
+      console.log(`Trying next method...`);
+    }
   }
 }
 
-console.log('Warning: Could not fix sharp automatically. Manual intervention may be required.');
+console.log('Warning: Could not fix sharp automatically during postinstall.');
 console.log('This may work at build time if network configuration is different.');
 process.exit(0); // Don't fail the install
