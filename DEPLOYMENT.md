@@ -12,9 +12,10 @@
 
 **Issue**: Gatsby's LMDB datastore tries to load compression dictionaries using file URLs during initialization. In certain build environments (e.g., Heroku), file path resolution fails, causing "TypeError: Invalid URL" in the LMDB `makeCompression` function, followed by ENOENT errors when trying to read the dictionary file.
 
-**Fix Applied**: Dual patch in `gatsby-node.js:36-73`:
+**Fix Applied**: Triple patch in `gatsby-node.js:36-94`:
 1. Global URL constructor patch that catches Invalid URL errors and provides a safe fallback
-2. fs.readFileSync patch that intercepts dictionary file reads and returns an empty buffer
+2. fs.openSync patch that intercepts dictionary file opens and redirects to a temp file
+3. fs.readFileSync patch that intercepts dictionary file reads and returns an empty buffer
 
 This allows LMDB to initialize successfully without compression dictionary support (which is optional and not used by default).
 
