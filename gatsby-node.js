@@ -78,8 +78,14 @@ try {
 
   // Patch fs.openSync to handle the dictionary file
   fs.openSync = function(filePath, flags, mode) {
+    // Debug: log all openSync calls to see what's being opened
+    const filePathStr = String(filePath);
+    if (filePathStr.includes('dict')) {
+      console.warn('[LMDB] openSync called with:', typeof filePath, filePath);
+    }
+
     // If LMDB is trying to open the compression dictionary, use our stub file
-    if (typeof filePath === 'string' && (filePath.includes('dict.txt') || filePath.includes('dict/dict'))) {
+    if (typeof filePath === 'string' && (filePath.includes('dict.txt') || filePath.includes('dict/dict') || filePath.includes('/dict/'))) {
       console.warn('[LMDB] Intercepted dictionary file open:', filePath, '-> redirecting to temp file');
       return originalOpenSync.call(this, tmpFile, flags, mode);
     }
