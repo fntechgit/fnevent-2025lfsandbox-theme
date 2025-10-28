@@ -230,9 +230,33 @@ if (typeof global !== 'undefined') {
   }
 }
 
-exports.onCreateWebpackConfig = ({ stage, actions, plugins }) => {
+exports.onCreateWebpackConfig = ({ stage, actions, plugins, getConfig }) => {
   const path = require('path');
   const webpack = require('webpack');
+
+  // Configure sass-loader to use sass-embedded for Node.js 22 compatibility
+  // This applies to all stages (develop, build-javascript, build-html, etc.)
+  const config = getConfig();
+
+  if (config.module && config.module.rules) {
+    config.module.rules.forEach(rule => {
+      if (rule.oneOf) {
+        rule.oneOf.forEach(oneOfRule => {
+          if (oneOfRule.use) {
+            oneOfRule.use.forEach(use => {
+              if (use.loader && use.loader.includes('sass-loader')) {
+                use.options = use.options || {};
+                use.options.implementation = require('sass-embedded');
+                console.log('[Gatsby] Configured sass-loader to use sass-embedded');
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  actions.replaceWebpackConfig(config);
 
   if (stage === 'build-html' || stage === 'develop-html') {
     // Additional webpack config for SSR if needed
