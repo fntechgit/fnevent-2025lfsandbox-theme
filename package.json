@@ -25,16 +25,16 @@
     "babel-preset-gatsby": "^3.14.0",
     "jsdom": "^24.0.0",
     "matchmediaquery": "^0.3.1",
-    "sass": "1.32.13",
+    "sass": "^1.49.9",
     "xmlhttprequest": "^1.8.0"
   },
   "resolutions": {
-    "**/sass": "1.32.13"
+    "**/sass": "^1.49.9"
   },
   "overrides": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "graphql": "^16.8.1",
-    "sass": "1.32.13"
+    "sass": "^1.49.9"
   }
 }
