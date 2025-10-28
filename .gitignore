@@ -8,6 +8,7 @@ public
 .DS_Store
 yarn-error.log
 build.log
+build-test.log
 .idea/
 # Local Netlify folder
 .netlify
