@@ -29,12 +29,14 @@
     "xmlhttprequest": "^1.8.0"
   },
   "resolutions": {
-    "**/sass": "^1.49.9"
+    "**/sass": "^1.49.9",
+    "**/sass-loader": "^13.3.3"
   },
   "overrides": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "graphql": "^16.8.1",
-    "sass": "^1.49.9"
+    "sass": "^1.49.9",
+    "sass-loader": "^13.3.3"
   }
 }
