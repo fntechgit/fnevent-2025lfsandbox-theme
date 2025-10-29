@@ -11,7 +11,35 @@ const jsdom = new JSDOM('<!doctype html><html><body></body></html>', {
 const { window } = jsdom;
 
 global.window = window;
-global.window.matchMedia = matchMedia;
+
+// Configure matchMedia with default values for SSR
+// The matchmediaquery library uses css-mediaquery internally, which requires
+// a values object with media feature values during matching
+const defaultMediaValues = {
+  width: 1024,
+  height: 768,
+  'device-width': 1024,
+  'device-height': 768,
+  orientation: 'landscape',
+  'aspect-ratio': '16/9',
+  'device-aspect-ratio': '16/9',
+  color: 8,
+  'color-index': 256,
+  'monochrome': 0,
+  resolution: '1dppx',
+  scan: 'progressive',
+  grid: 0,
+  'prefers-reduced-motion': 'no-preference',
+  'prefers-color-scheme': 'light',
+  'prefers-contrast': 'no-preference',
+  'prefers-reduced-transparency': 'no-preference',
+};
+
+// Create a wrapper around matchMedia that provides default values
+global.window.matchMedia = function(query) {
+  return matchMedia(query, defaultMediaValues);
+};
+
 global.document = window.document;
 
 // Ensure window.history is available with state property
