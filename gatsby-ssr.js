@@ -59,6 +59,7 @@ if (typeof global !== 'undefined') {
             getAttribute: () => null,
             removeAttribute: () => {},
             hasAttribute: () => false,
+            getElementsByTagName: () => [],
           },
           body: {
             style: {},
@@ -66,6 +67,7 @@ if (typeof global !== 'undefined') {
             getAttribute: () => null,
             removeAttribute: () => {},
             hasAttribute: () => false,
+            getElementsByTagName: () => [],
           },
           createElement: () => ({
             style: {},
@@ -77,6 +79,7 @@ if (typeof global !== 'undefined') {
             removeChild: () => {},
             addEventListener: () => {},
             removeEventListener: () => {},
+            getElementsByTagName: () => [],
             classList: {
               add: () => {},
               remove: () => {},
