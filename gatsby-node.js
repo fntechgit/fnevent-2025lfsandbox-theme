@@ -218,6 +218,16 @@ if (typeof global !== 'undefined') {
           removeItem: () => {},
           clear: () => {},
         },
+        history: {
+          length: 0,
+          scrollRestoration: 'auto',
+          state: null,
+          back: () => {},
+          forward: () => {},
+          go: () => {},
+          pushState: () => {},
+          replaceState: () => {},
+        },
       };
 
       global.window = mockWindow;
