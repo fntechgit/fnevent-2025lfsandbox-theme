@@ -214,6 +214,7 @@ if (typeof global !== 'undefined') {
             innerHTML: '',
             textContent: '',
           }),
+          getElementsByTagName: () => [],
         },
         navigator: global.navigator,
         getComputedStyle: () => ({
