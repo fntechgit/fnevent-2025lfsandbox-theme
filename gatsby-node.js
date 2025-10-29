@@ -213,6 +213,7 @@ if (typeof global !== 'undefined') {
           }),
           createElement: createMockElement,
           getElementsByTagName: () => [createMockElement()],
+          querySelectorAll: () => [],
         },
         navigator: global.navigator,
         getComputedStyle: () => ({
