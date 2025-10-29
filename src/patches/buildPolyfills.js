@@ -14,6 +14,20 @@ global.window = window;
 global.window.matchMedia = matchMedia;
 global.document = window.document;
 
+// Ensure window.history is available with state property
+if (!global.window.history || typeof global.window.history.state === 'undefined') {
+  global.window.history = {
+    length: 0,
+    scrollRestoration: 'auto',
+    state: null,
+    back: () => {},
+    forward: () => {},
+    go: () => {},
+    pushState: () => {},
+    replaceState: () => {},
+  };
+}
+
 // Fix: Use Object.defineProperty for navigator to avoid read-only property error
 if (window.navigator) {
   try {
