@@ -165,6 +165,33 @@ if (typeof global !== 'undefined') {
   // Add window polyfill for SSR
   if (typeof window === 'undefined') {
     try {
+      // Helper function to create a mock element
+      const createMockElement = () => ({
+        style: {},
+        setAttribute: () => {},
+        getAttribute: () => null,
+        removeAttribute: () => {},
+        hasAttribute: () => false,
+        appendChild: () => {},
+        removeChild: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        getElementsByTagName: () => [createMockElement()],
+        classList: {
+          add: () => {},
+          remove: () => {},
+          contains: () => false,
+          toggle: () => false,
+        },
+        innerHTML: '',
+        textContent: '',
+        childNodes: [],
+        children: [],
+        firstChild: null,
+        lastChild: null,
+        parentNode: null,
+      });
+
       // Create a comprehensive window mock for SSR
       const mockWindow = {
         matchMedia: (query) => ({
@@ -178,43 +205,14 @@ if (typeof global !== 'undefined') {
           dispatchEvent: () => true,
         }),
         document: {
-          documentElement: {
-            style: {},
-            setAttribute: () => {},
-            getAttribute: () => null,
-            removeAttribute: () => {},
-            hasAttribute: () => false,
-            getElementsByTagName: () => [],
-          },
-          body: {
-            style: {},
-            setAttribute: () => {},
-            getAttribute: () => null,
-            removeAttribute: () => {},
-            hasAttribute: () => false,
-            getElementsByTagName: () => [],
-          },
-          createElement: () => ({
-            style: {},
-            setAttribute: () => {},
-            getAttribute: () => null,
-            removeAttribute: () => {},
-            hasAttribute: () => false,
-            appendChild: () => {},
-            removeChild: () => {},
-            addEventListener: () => {},
-            removeEventListener: () => {},
-            getElementsByTagName: () => [],
-            classList: {
-              add: () => {},
-              remove: () => {},
-              contains: () => false,
-              toggle: () => false,
-            },
-            innerHTML: '',
-            textContent: '',
+          documentElement: Object.assign(createMockElement(), {
+            getElementsByTagName: () => [createMockElement()],
           }),
-          getElementsByTagName: () => [],
+          body: Object.assign(createMockElement(), {
+            getElementsByTagName: () => [createMockElement()],
+          }),
+          createElement: createMockElement,
+          getElementsByTagName: () => [createMockElement()],
         },
         navigator: global.navigator,
         getComputedStyle: () => ({
